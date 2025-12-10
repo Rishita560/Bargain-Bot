@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bargain Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bargain Bot</h1>
+        <p style="text-align: center; color: #666;">Enter a product name to compare prices across Amazon and Snapdeal.</p>
+        
+        <div class="search-box">
+            <form method="POST" action="/">
+                <input type="text" name="product_name" placeholder="e.g., Samsung Galaxy S23" required>
+                <br>
+                <button type="submit">Compare Prices</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

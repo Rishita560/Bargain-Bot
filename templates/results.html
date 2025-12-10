@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results for {{ product_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Results for: <strong>{{ product_name }}</strong></h1>
+        <hr>
+
+        {% if min_price > 0 %}
+            <div class="min-price">
+                The Best Price is <strong>₹{{ "{:,.0f}".format(min_price) }}</strong><br>
+                found on <strong>{{ min_source }}</strong>!<br><br>
+                <a class="button" href="{{ min_url }}" target="_blank" style="background:#28a745; color:white; padding:10px 20px; border-radius:4px; text-decoration:none;">
+                    Buy Now on {{ min_source }}
+                </a>
+            </div>
+
+            <h2>All Prices Found:</h2>
+
+            {% for source, data in results.items() %}
+                <div class="result-card {% if source == min_source %}best{% endif %}">
+                    <div>
+                        <h3>{{ source }}</h3>
+                        <span style="font-size: 1.2em; font-weight: bold;">₹{{ data.display_price }}</span>
+                    </div>
+                    <div>
+                        <a href="{{ data.url }}" target="_blank"> Visit Site </a>
+                    </div>
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="not-found">
+                <h3>No exact matches found.</h3>
+                <p>We couldn't find "<strong>{{ product_name }}</strong>" on our monitored sites. 
+                Please try checking your spelling or search for a more generic term (e.g., "iPhone 13" instead of "iPhone 13 with charger").</p>
+            </div>
+        {% endif %}
+        
+        <div class="restart-link">
+            <a href="/">New Search</a>
+        </div>
+    </div>
+</body>
+</html>
