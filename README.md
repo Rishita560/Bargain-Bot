@@ -1,7 +1,3 @@
-This is a great, well-structured web scraping and price comparison project\! Here is a comprehensive README file for your "Bargain Bot" application.
-
------
-
 # 🤖 Bargain Bot: E-commerce Price Comparison Tool
 
 Bargain Bot is a simple, yet effective Flask web application that scrapes product prices from major Indian e-commerce sites (Amazon India and Snapdeal) and compares them to find the lowest price for the user.
