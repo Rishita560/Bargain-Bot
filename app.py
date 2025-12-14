@@ -20,14 +20,16 @@ def index():
             results['Amazon'] = {
                 'price': am_price_int, 
                 'url': am_data['url'],
-                'display_price': am_data['price']
+                'display_price': am_data['price'],
+                'rating': am_data['rating']
             }
         
         if sd_price_int > 0:
             results['Snapdeal'] = {
                 'price': sd_price_int, 
                 'url': sd_data['url'],
-                'display_price': sd_data['price']
+                'display_price': sd_data['price'],
+                'rating' : sd_data['rating']
             }
 
         min_price = float('inf')

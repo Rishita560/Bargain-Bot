@@ -4,7 +4,7 @@ import re
 
 headers = {'User-Agent' : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
 
-EXCLUDE_KEYWORDS = ["CASE","SLEEVES", "COVER", "SCREEN PROTECTOR", "CHARGER", "CABLE", "ADAPTER", "GUARD", "BACK"]
+EXCLUDE_KEYWORDS = ["CASE","SLEEVES", "COVER", "SCREEN PROTECTOR", "CHARGER", "CABLE", "ADAPTER", "GUARD", "BACK", "TABLE", "STAND", "BAGS"]
 
 def convert(a):
     try:
@@ -31,13 +31,29 @@ def snapdeal(name):
             title = container.select_one(".product-title")
             price = container.select_one(".lfloat.product-price") 
             link = container.select_one("a.dp-widget-link")
+            stars = container.select_one(".filled-stars")
 
             if not title or not price:
                 continue
 
+            prod_rating = 0.0 
+
+            if stars:
+                style_value = stars.get('style') 
+                
+                if style_value:
+                    try:
+                        rating_percentage_str = style_value.replace("width:", "").replace("%", "").strip()
+                        rating_percentage = float(rating_percentage_str)
+                        prod_rating = rating_percentage / 20.0 
+                    except ValueError:
+                        prod_rating = 0.0 
+                        
+
             prod_name = title.getText().strip()
             prod_price = price.getText().strip().replace("Rs.","").replace("₹", "")
             prod_name_upper = prod_name.upper()
+            
 
             is_match = name_upper in prod_name_upper
             is_accessory = any(k in prod_name_upper for k in EXCLUDE_KEYWORDS)
@@ -52,13 +68,14 @@ def snapdeal(name):
 
             if valid:
                 found_url = link['href'] if link else url
-                return {'price': prod_price, 'url': found_url}
+                return {'price': prod_price, 'url': found_url, 'rating': prod_rating}
         
-        return {'price': '0', 'url': ''}
+        return {'price': '0', 'url': '', 'rating': 0.0}
 
     except Exception as e:
         print(f"Snapdeal Error: {e}")
-        return {'price': '0', 'url': ''}
+        return {'price': '0', 'url': '', 'rating': 0.0}
+    
 
 def amazon(name):
     try:
@@ -76,10 +93,22 @@ def amazon(name):
         for container in product_containers:
             title = container.select_one(".a-text-normal")
             price = container.select_one(".a-price-whole")
-            link = container.select_one("span.a-size-base-plus > a.a-link-normal") 
+            link = container.select_one("a.a-link-normal") 
+            rating_element = container.select_one('a[aria-label*="out of 5 stars"]')
 
             if not title or not price:
                 continue
+
+            prod_rating = 0.0 
+
+            if rating_element:
+                try:
+                    rating_label = rating_element['aria-label']
+                    rating_str = rating_label.split(' ')[0]
+                    prod_rating = float(rating_str)
+                    
+                except (KeyError, ValueError, IndexError):
+                    prod_rating = 0.0
 
             prod_name = title.getText().strip()
             prod_price = price.getText().strip()
@@ -99,10 +128,10 @@ def amazon(name):
             if valid:
                 relative_url = link['href'] if link else ""
                 final_url = f"https://www.amazon.in{relative_url}" if relative_url else url
-                return {'price': prod_price, 'url': final_url}
+                return {'price': prod_price, 'url': final_url, 'rating': prod_rating}
         
-        return {'price': '0', 'url': ''}
+        return {'price': '0', 'url': '', 'rating': 0.0}
         
     except Exception as e:
         print(f"Amazon Error: {e}")
-        return {'price': '0', 'url': ''}
+        return {'price': '0', 'url': '', 'rating': 0.0}

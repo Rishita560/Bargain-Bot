@@ -27,6 +27,11 @@
                     <div>
                         <h3>{{ source }}</h3>
                         <span style="font-size: 1.2em; font-weight: bold;">₹{{ data.display_price }}</span>
+
+                        {% if data.rating > 0 %}
+                            <p style="font-size: 0.9em; color: #555; margin-top: 5px;">Star Rating:<strong>{{ "{:.1f}".format(data.rating) }} / 5.0</strong></p>
+                        {% endif %}
+
                     </div>
                     <div>
                         <a href="{{ data.url }}" target="_blank"> Visit Site </a>
