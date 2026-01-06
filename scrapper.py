@@ -1,10 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
 import re 
+from rapidfuzz import fuzz
 
-headers = {'User-Agent' : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
+headers = {'User-Agent' : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+           'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Referer': 'https://www.google.com/',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Connection': 'keep-alive',}
 
-EXCLUDE_KEYWORDS = ["CASE","SLEEVES", "COVER", "SCREEN PROTECTOR", "CHARGER", "CABLE", "ADAPTER", "GUARD", "BACK", "TABLE", "STAND", "BAGS"]
+EXCLUDE_KEYWORDS = ["CASE","SLEEVES", "COVER", "SCREEN PROTECTOR", "CHARGER", "CABLE", "ADAPTER", "GUARD", "BACK", "TABLE", "STAND", "BAGS", "SKIN", "BATTERY", "BAG"]
 
 def convert(a):
     try:
@@ -14,6 +20,10 @@ def convert(a):
         return int(float(cleaned_string))
     except (ValueError, TypeError):
         return 0
+
+def smart_match(query, title, threshold=70):
+    score = fuzz.token_set_ratio(query, title)
+    return score >= threshold
 
 def snapdeal(name):
     try:
@@ -55,7 +65,7 @@ def snapdeal(name):
             prod_name_upper = prod_name.upper()
             
 
-            is_match = name_upper in prod_name_upper
+            is_match = smart_match(name_upper, prod_name_upper)
             is_accessory = any(k in prod_name_upper for k in EXCLUDE_KEYWORDS)
 
             valid = False
@@ -114,7 +124,7 @@ def amazon(name):
             prod_price = price.getText().strip()
             prod_name_upper = prod_name.upper()
 
-            is_match = name_upper in prod_name_upper
+            is_match = smart_match(name_upper, prod_name_upper)
             is_accessory = any(k in prod_name_upper for k in EXCLUDE_KEYWORDS)
 
             valid = False
